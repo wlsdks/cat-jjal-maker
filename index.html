@@ -47,6 +47,14 @@
         },
       };
 
+      const fetchCat = async (text) => {
+        const OPEN_API_DOMAIN = "https://cataas.com";
+        const response = await fetch(`${OPEN_API_DOMAIN}/cat/says/${text}?json=true`);
+        const responseJson = await response.json();
+        return `${OPEN_API_DOMAIN}/${responseJson.url}`;
+      };
+
+
       console.log("야옹");
 
       const Title = (props) => {
@@ -76,7 +84,7 @@
             return;
           }
 
-          updateMainCat();
+          updateMainCat(value);
         }
 
         return (
@@ -133,8 +141,24 @@
           jsonLocalStorage.getItem('favorites') || []
         );
 
-        function updateMainCat() {
-          setMainCat(CAT2);
+        async function setInitialCat(){
+          const newCat = await fetchCat('First Cat');
+          console.log(newCat)
+          setMainCat(newCat);
+        }
+      
+        React.useEffect(() => {
+          setInitialCat();
+        }, []);
+
+        React.useEffect(() => {
+          console.log("헬로");
+        }, [counter])
+
+        async function updateMainCat(value) {
+          const newCat = await fetchCat(value);
+
+          setMainCat(newCat);
           const nextCounter = counter + 1;
           setCounter(nextCounter);
           jsonLocalStorage.setItem('counter', nextCounter);
